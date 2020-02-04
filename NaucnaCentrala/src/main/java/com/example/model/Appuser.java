@@ -2,7 +2,6 @@ package com.example.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 
@@ -17,7 +16,7 @@ public class Appuser implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long id;
+	private int id;
 
 	private String city;
 
@@ -28,49 +27,51 @@ public class Appuser implements Serializable {
 	private String name;
 
 	private String password;
-	
+
 	private String role;
 
 	private String surname;
-	
+
 	private String username;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(
-		name="appuser_scifield"
-		, joinColumns={
-			@JoinColumn(name="appuser_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="scientific_field_id")
-			}
-		)
+	@ManyToMany(mappedBy="appusers", fetch=FetchType.EAGER)
 	private Set<ScientificField> scientificFields;
 
-	//bi-directional many-to-one association to Magazine
-	@OneToMany(mappedBy="appuser")
-	private List<Magazine> magazines;
+	//bi-directional many-to-one association to Article
+	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
+	private Set<Article> articles;
+
+	//bi-directional many-to-many association to Magazine
+	@ManyToMany(mappedBy="appusers", fetch=FetchType.EAGER)
+	private Set<Magazine> magazines;
+
+	//bi-directional many-to-one association to Review
+	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
+	private Set<Review> reviews;
+
+	//bi-directional many-to-one association to Subscription
+	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
+	private Set<Subscription> subscriptions;
 
 	public Appuser() {
 	}
 
-	public long getId() {
+	public int getId() {
 		return this.id;
 	}
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
-
+	
 	public String getCity() {
 		return this.city;
 	}
-
+	
 	public void setCity(String city) {
 		this.city = city;
 	}
-
 
 	public String getCountry() {
 		return this.country;
@@ -136,26 +137,74 @@ public class Appuser implements Serializable {
 		this.scientificFields = scientificFields;
 	}
 
-	public List<Magazine> getMagazines() {
-		return this.magazines;
+	public Set<Article> getArticles() {
+		return this.articles;
 	}
 
-	public void setMagazines(List<Magazine> magazines) {
+	public void setArticles(Set<Article> articles) {
+		this.articles = articles;
+	}
+
+	public Article addArticle(Article article) {
+		getArticles().add(article);
+		article.setAppuser(this);
+
+		return article;
+	}
+
+	public Article removeArticle(Article article) {
+		getArticles().remove(article);
+		article.setAppuser(null);
+
+		return article;
+	}
+
+	public void setMagazines(Set<Magazine> magazines) {
 		this.magazines = magazines;
 	}
 
-	public Magazine addMagazine(Magazine magazine) {
-		getMagazines().add(magazine);
-		magazine.setAppuser(this);
-
-		return magazine;
+	public Set<Review> getReviews() {
+		return this.reviews;
 	}
 
-	public Magazine removeMagazine(Magazine magazine) {
-		getMagazines().remove(magazine);
-		magazine.setAppuser(null);
+	public void setReviews(Set<Review> reviews) {
+		this.reviews = reviews;
+	}
 
-		return magazine;
+	public Review addReview(Review review) {
+		getReviews().add(review);
+		review.setAppuser(this);
+
+		return review;
+	}
+
+	public Review removeReview(Review review) {
+		getReviews().remove(review);
+		review.setAppuser(null);
+
+		return review;
+	}
+
+	public Set<Subscription> getSubscriptions() {
+		return this.subscriptions;
+	}
+
+	public void setSubscriptions(Set<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
+	}
+
+	public Subscription addSubscription(Subscription subscription) {
+		getSubscriptions().add(subscription);
+		subscription.setAppuser(this);
+
+		return subscription;
+	}
+
+	public Subscription removeSubscription(Subscription subscription) {
+		getSubscriptions().remove(subscription);
+		subscription.setAppuser(null);
+
+		return subscription;
 	}
 
 }

@@ -4,5 +4,8 @@
 		<class>com.example.model.Appuser</class>
 		<class>com.example.model.Magazine</class>
 		<class>com.example.model.ScientificField</class>
+		<class>com.example.model.Article</class>
+		<class>com.example.model.Review</class>
+		<class>com.example.model.Subscription</class>
 	</persistence-unit>
 </persistence>

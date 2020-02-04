@@ -89,7 +89,7 @@ public class SciFieldController {
 		EnumFormType enumFormType = (EnumFormType) enumField.getType();
 		Map<String, String> values = enumFormType.getValues();
 		for(ScientificField c : scientificAreaService.getAll()){
-			values.put(c.getId().toString(), c.getName());
+			values.put(String.valueOf(c.getId()), c.getName());
 		}
 		
         return new FormFieldsDto(task.getId(),task.getProcessInstanceId(), properties);
