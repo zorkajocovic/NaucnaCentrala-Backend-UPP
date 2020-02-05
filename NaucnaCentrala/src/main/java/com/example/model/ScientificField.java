@@ -2,6 +2,8 @@ package com.example.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import java.util.List;
 import java.util.Set;
 
 
@@ -20,32 +22,14 @@ public class ScientificField implements Serializable {
 	private long id;
 
 	private String name;
-
+	
 	//bi-directional many-to-many association to Appuser
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(
-		name="appuser_scifield"
-		, joinColumns={
-			@JoinColumn(name="scientific_field_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="appuser_id")
-			}
-		)
-	private Set<Appuser> appusers;
+	@ManyToMany(fetch=FetchType.LAZY)
+	private List<Appuser> appusers;
 
 	//bi-directional many-to-many association to Magazine
-	@ManyToMany(fetch=FetchType.EAGER)
-	@JoinTable(
-		name="magazine_scifield"
-		, joinColumns={
-			@JoinColumn(name="scientific_field_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="magazine_id")
-			}
-		)
-	private Set<Magazine> magazines;
+	@ManyToMany(fetch=FetchType.LAZY)
+	private List<Magazine> magazines;
 
 	public ScientificField() {
 	}
@@ -66,19 +50,19 @@ public class ScientificField implements Serializable {
 		this.name = name;
 	}
 
-	public Set<Appuser> getAppusers() {
+	public List<Appuser> getAppusers() {
 		return this.appusers;
 	}
 
-	public void setAppusers(Set<Appuser> appusers) {
+	public void setAppusers(List<Appuser> appusers) {
 		this.appusers = appusers;
 	}
 
-	public Set<Magazine> getMagazines() {
+	public List<Magazine> getMagazines() {
 		return this.magazines;
 	}
 
-	public void setMagazines(Set<Magazine> magazines) {
+	public void setMagazines(List<Magazine> magazines) {
 		this.magazines = magazines;
 	}
 

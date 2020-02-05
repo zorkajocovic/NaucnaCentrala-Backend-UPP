@@ -22,8 +22,6 @@ public class Magazine implements Serializable {
 
 	private boolean isopenaccess;
 
-	private int sciArea_id;
-
 	private String title;
 
 	//bi-directional many-to-one association to Appuser
@@ -31,7 +29,16 @@ public class Magazine implements Serializable {
 	private Appuser appuser;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(mappedBy="magazines", fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(
+		name="magazine_scifield"
+		, joinColumns={
+			@JoinColumn(name="magazine_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="scientific_field_id")
+			}
+		)
 	private Set<ScientificField> scientificFields;
 
 	//bi-directional many-to-one association to Article
@@ -49,8 +56,21 @@ public class Magazine implements Serializable {
 			@JoinColumn(name="appuser_id")
 			}
 		)
-	private Set<Appuser> appusers;
-
+	private Set<Appuser> reviewers;
+	
+	//bi-directional many-to-many association to Appuser
+		@ManyToMany(fetch=FetchType.EAGER)
+		@JoinTable(
+			name="magazine_editor"
+			, joinColumns={
+				@JoinColumn(name="magazine_id")
+				}
+			, inverseJoinColumns={
+				@JoinColumn(name="appuser_id")
+				}
+			)
+		private Set<Appuser> editors;
+		
 	//bi-directional many-to-one association to Subscription
 	@OneToMany(mappedBy="magazine", fetch=FetchType.EAGER)
 	private Set<Subscription> subscriptions;
@@ -81,15 +101,7 @@ public class Magazine implements Serializable {
 	public void setIsopenaccess(boolean isopenaccess) {
 		this.isopenaccess = isopenaccess;
 	}
-
-	public int getSciArea_id() {
-		return this.sciArea_id;
-	}
-
-	public void setSciArea_id(int sciArea_id) {
-		this.sciArea_id = sciArea_id;
-	}
-
+	
 	public String getTitle() {
 		return this.title;
 	}

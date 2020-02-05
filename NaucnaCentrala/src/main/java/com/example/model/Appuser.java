@@ -16,7 +16,7 @@ public class Appuser implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 
 	private String city;
 
@@ -35,7 +35,16 @@ public class Appuser implements Serializable {
 	private String username;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(mappedBy="appusers", fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER)
+	@JoinTable(
+		name="appuser_scifield"
+		, joinColumns={
+			@JoinColumn(name="appuser_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="scientific_field_id")
+			}
+		)
 	private Set<ScientificField> scientificFields;
 
 	//bi-directional many-to-one association to Article
@@ -43,8 +52,28 @@ public class Appuser implements Serializable {
 	private Set<Article> articles;
 
 	//bi-directional many-to-many association to Magazine
-	@ManyToMany(mappedBy="appusers", fetch=FetchType.EAGER)
-	private Set<Magazine> magazines;
+	@ManyToMany(mappedBy="reviewers", fetch=FetchType.EAGER)
+	private Set<Magazine> magazinesReviewer;
+
+	//bi-directional many-to-many association to Magazine
+	@ManyToMany(mappedBy="editors", fetch=FetchType.EAGER)
+	private Set<Magazine> magazinesEditor;
+	
+	public Set<Magazine> getMagazinesReviewer() {
+		return magazinesReviewer;
+	}
+
+	public void setMagazinesReviewer(Set<Magazine> magazinesReviewer) {
+		this.magazinesReviewer = magazinesReviewer;
+	}
+
+	public Set<Magazine> getMagazinesEditor() {
+		return magazinesEditor;
+	}
+
+	public void setMagazinesEditor(Set<Magazine> magazinesEditor) {
+		this.magazinesEditor = magazinesEditor;
+	}
 
 	//bi-directional many-to-one association to Review
 	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
@@ -57,11 +86,11 @@ public class Appuser implements Serializable {
 	public Appuser() {
 	}
 
-	public int getId() {
+	public long getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 	
@@ -160,7 +189,7 @@ public class Appuser implements Serializable {
 	}
 
 	public void setMagazines(Set<Magazine> magazines) {
-		this.magazines = magazines;
+		this.magazinesReviewer = magazines;
 	}
 
 	public Set<Review> getReviews() {

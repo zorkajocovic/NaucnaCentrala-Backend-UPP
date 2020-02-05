@@ -16,15 +16,13 @@ public class Article implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private int id;
+	private long id;
 
 	@Column(name="abstract")
 	private String abstract_;
 
 	@Column(name="key_words")
 	private String keyWords;
-
-	private String pdflocation;
 
 	private String pdfurl;
 
@@ -45,11 +43,11 @@ public class Article implements Serializable {
 	public Article() {
 	}
 
-	public int getId() {
+	public long getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -67,14 +65,6 @@ public class Article implements Serializable {
 
 	public void setKeyWords(String keyWords) {
 		this.keyWords = keyWords;
-	}
-
-	public String getPdflocation() {
-		return this.pdflocation;
-	}
-
-	public void setPdflocation(String pdflocation) {
-		this.pdflocation = pdflocation;
 	}
 
 	public String getPdfurl() {

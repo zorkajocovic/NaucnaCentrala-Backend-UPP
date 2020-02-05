@@ -18,23 +18,13 @@ public class Review implements Serializable {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 
-	private String comment;
-
-
 	@Column(name="comments_for_authors")
 	private String commentsForAuthors;
 
 	@Column(name="comments_for_editors")
 	private String commentsForEditors;
 
-
 	private String recommendation;
-
-	@Column(name="reviewer_id")
-	private int reviewerId;
-
-
-	private String suggestion;
 
 	//bi-directional many-to-one association to Article
 	@ManyToOne
@@ -54,15 +44,6 @@ public class Review implements Serializable {
 	public void setId(long id) {
 		this.id = id;
 	}
-
-	public String getComment() {
-		return this.comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
 
 	public String getCommentsForAuthors() {
 		return this.commentsForAuthors;
@@ -86,21 +67,6 @@ public class Review implements Serializable {
 
 	public void setRecommendation(String recommendation) {
 		this.recommendation = recommendation;
-	}
-
-	public int getReviewerId() {
-		return this.reviewerId;
-	}
-
-	public void setReviewerId(int reviewerId) {
-		this.reviewerId = reviewerId;
-	}
-	public String getSuggestion() {
-		return this.suggestion;
-	}
-
-	public void setSuggestion(String suggestion) {
-		this.suggestion = suggestion;
 	}
 
 	public Article getArticle() {
