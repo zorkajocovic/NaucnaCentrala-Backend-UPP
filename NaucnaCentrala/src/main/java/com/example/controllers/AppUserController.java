@@ -12,10 +12,21 @@ import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
+import org.jvnet.hk2.config.GenerateServiceFromMethod;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 import com.example.camunda.dto.FieldDto;
 import com.example.camunda.dto.LoginDto;
@@ -37,6 +47,9 @@ import com.example.dto.LoginRequestDto;
 import com.example.services.AppUserService;
 import com.example.services.SciFieldService;
 import com.example.model.Appuser;
+import com.example.security.JWTUtils;
+import com.example.security.MyUserDetailsService;
+import com.example.security.TokenDto;
 
 @RestController
 @RequestMapping(value = "api/user")
@@ -56,9 +69,18 @@ public class AppUserController {
 	
 	@Autowired
     RuntimeService runtimeService;
-		
+	
+	@Value("Authorization")
+	private String tokenHeader;
+	
 	@Autowired
 	private LoginDto loginDto; 
+	 
+	@Autowired
+    private JWTUtils jwtUtils;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	
 	@GetMapping("/allUsers")
 	public ResponseEntity<List<AppUserDto>> getAllUsers(){
@@ -140,29 +162,48 @@ public class AppUserController {
         }
 	}*/
 	
-	@PostMapping(path = "/login/{taskId}", produces = "application/json")
-    public @ResponseBody ResponseEntity<Object> post(@RequestBody List<FieldDto> dto, @PathVariable String taskId) {
-		HashMap<String, Object> map = this.mapListToDto(dto);
-		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-		String processInstanceId = task.getProcessInstanceId();
+	@PostMapping(path = "/login/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<?> post(@RequestBody LoginRequestDto loginRequestDto, @PathVariable String taskId) {
 		
-		LoginRequestDto loggedUser = loginDto.convert(dto);
-		Appuser user = userService.getbyUsername(loggedUser.getUsername());
-		if(user != null) {
-			runtimeService.setVariable(processInstanceId, "exists", true);
-			runtimeService.setVariable(processInstanceId, "login", dto);
-		}
-		else {
-			runtimeService.setVariable(processInstanceId, "exists", false);
-		}
-		formService.submitTaskForm(taskId, map);
-        return new ResponseEntity<>(HttpStatus.OK);
+		try{
+			  Appuser user = userService.getbyUsername(loginRequestDto.getUsername());
+			  if(user != null) {
+			     /* UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+			        		 										loginRequestDto.getUsername(),
+			        		 										loginRequestDto.getPassword());
+			      authenticationManager.authenticate(token);*/
+					
+				  TokenDto tokenDto = userService.generateToken(user.getUsername());
+
+		            Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		    		String processInstanceId = task.getProcessInstanceId();
+		    		runtimeService.setVariable(processInstanceId, "exists", true);
+		    		runtimeService.setVariable(processInstanceId, "authorId", user.getUsername());
+		    		taskService.complete(taskId);    		
+					return new ResponseEntity<>(tokenDto, HttpStatus.OK);
+			  }
+			  else {
+					return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			  }			  
+			} 
+			catch(AuthenticationException e) {
+				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			}
     }
 	
 	@RequestMapping(value = "/getCurrentUser", method = RequestMethod.GET)
     public @ResponseBody ResponseEntity<Object> getCurrentUser() {
+		
 		Appuser currentUser = userService.getCurrentUser();
         return new ResponseEntity<>(currentUser, HttpStatus.OK);
+    }
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public ResponseEntity<?> signout() {
+		
+        SecurityContextHolder.clearContext();
+        
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 	
 	

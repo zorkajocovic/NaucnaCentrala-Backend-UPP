@@ -7,11 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.dto.ArticleDto;
-import com.example.dto.MagazineDto;
 import com.example.model.Article;
-import com.example.model.Magazine;
 import com.example.repositories.ArticleRepository;
-import com.example.repositories.MagazineRepository;
 
 @Service
 public class ArticleService {

@@ -54,7 +54,6 @@ public class MagazineService {
 		magazine.setTitle(magazineDto.getTitle());
 		magazine.setDescription(magazineDto.getDescription());
 		magazine.setIsopenaccess(magazineDto.isIsopenaccess());
-		magazine.setAppuser(magazine.getAppuser());
 	
 		return magazine;
 	}

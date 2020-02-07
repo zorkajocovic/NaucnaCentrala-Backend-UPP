@@ -14,7 +14,7 @@ import com.example.model.Appuser;
 import com.example.services.AppUserService;
 
 @Service
-public class LoginService implements JavaDelegate {
+public class CheckLoginService implements JavaDelegate {
 
 	@Autowired
 	private AppUserService userService;
@@ -29,10 +29,10 @@ public class LoginService implements JavaDelegate {
 		List<FieldDto> userData = (List<FieldDto>) execution.getVariable("login");
 		LoginRequestDto loggedUser = loginDto.convert(userData);
 
-		Appuser user = userService.getbyUsername(loggedUser.getUsername());
+		/*Appuser user = userService.getbyUsername(loggedUser.getUsername());
 		if(user != null) {
 		   userService.setCurrentUser(user);
-		}
+		}*/
 	}
 
 	

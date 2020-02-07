@@ -4,17 +4,15 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionContext;
+import java.util.Optional;
 
 import org.camunda.bpm.engine.IdentityService;
-import org.camunda.bpm.engine.impl.identity.Authentication;
-import org.camunda.bpm.webapp.impl.security.auth.AuthenticationFilter;
-import org.camunda.bpm.webapp.impl.security.auth.Authentications;
-import org.camunda.bpm.webapp.impl.security.auth.UserAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +20,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 import com.example.dto.AppUserDto;
 import com.example.repositories.AppUserRepository;
-
+import com.example.security.JWTUtils;
+import com.example.security.MyUserDetailsService;
+import com.example.security.TokenDto;
 import com.example.model.Appuser;
 
 @Service
@@ -33,6 +33,12 @@ public class AppUserService {
 	
 	@Autowired
 	IdentityService identityService;
+
+	@Autowired
+	JWTUtils tokenUtils;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
 	
 	public List<Appuser> getAll(){
 		return userRepository.findAll();
@@ -70,32 +76,34 @@ public class AppUserService {
 		return userRepository.existsById(id);
 	}
 
-	public void setCurrentUser(Appuser user) {
-		/*Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("User"));
-        PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(user.getId(), null, authorities);
-        SecurityContextHolder.getContext().setAuthentication(authentication);*/
-        List<String> groups = new ArrayList<String>();
-        groups.add(user.getRole());
-        identityService.setAuthentication(user.getUsername(), groups, null);
-        identityService.setAuthenticatedUserId(user.getUsername());		//log in to camunda engine
-    }
+	public TokenDto generateToken(String username) {
+		
+		Appuser user = getbyUsername(username);
+    	MyUserDetailsService customUserdetails = new MyUserDetailsService(user);
+        String userToken = tokenUtils.generateToken(customUserdetails);            
 
+        return new TokenDto(userToken);
+	}
+	
     public Appuser getCurrentUser() {
-    	/*Authentication auth = (Authentication) SecurityContextHolder.getContext().getAuthentication();
-        try {
-            Long id = Long.parseLong(((Principal) auth).getName());
-            return userRepository.findById(id).orElseGet(null);
-        } catch (Exception e) {
-            return null;
-        }
-        */
-       // Authentications authentications = Authentications.getFromSession());
-    	Authentication autenticated = identityService.getCurrentAuthentication();
-    	if(autenticated != null) 
-    		return userRepository.findByUsername(autenticated.getUserId());
-    	else
-    		return null;
+    	String currentUsername = "";
+    	  Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	  if (!(auth instanceof AnonymousAuthenticationToken)) {
+    		  currentUsername = auth.getName();
+      		  System.out.println("username ulogovan: " + currentUsername);
+    	  }
+    	  else
+      		  System.out.println(auth.getName());
+
+          try {
+              Long id = Long.parseLong(auth.getName());
+             
+              Optional<Appuser> user = userRepository.findById(id);
+              Appuser ret = user.orElseGet(null);
+              return ret;
+          } catch (Exception e) {
+              return null;
+          }
     }
 
 	public Appuser checkUser(Appuser checkLoggedIn) {

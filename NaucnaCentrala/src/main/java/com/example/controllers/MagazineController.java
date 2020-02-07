@@ -1,7 +1,9 @@
 package com.example.controllers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.camunda.bpm.engine.FormService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -13,6 +15,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +26,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.camunda.dto.FormFieldsDto;
 import com.example.dto.MagazineDto;
+import com.example.services.AppUserService;
 import com.example.services.MagazineService;
-
+import com.example.model.Appuser;
 import com.example.model.Magazine;
 
 @RestController
@@ -43,6 +47,9 @@ public class MagazineController {
 	@Autowired
 	MagazineService magazineService;
 	
+	@Autowired
+	AppUserService userService;
+	
 	@GetMapping("/allMagazines")
 	public ResponseEntity<List<MagazineDto>> getAllMagazines(){
 		
@@ -55,18 +62,32 @@ public class MagazineController {
 		return new ResponseEntity<>(magazinesDTO, HttpStatus.OK);
 	}
 	
-	@GetMapping(path = "/startMagazineProcess/magazineId", produces = "application/json")
+	/*@GetMapping(path = "/startArticleProcess/{magazineId}", produces = "application/json")
     public @ResponseBody FormFieldsDto get(@PathVariable String magazineId) {
 
 		ProcessInstance pi = runtimeService.startProcessInstanceByKey("Article");
 		runtimeService.setVariable(pi.getProcessInstanceId(), "magazineId", magazineId);
+    }*/
+	
+	@GetMapping(path = "/startArticleProcess/{magazineId}", produces = "application/json")
+	public ResponseEntity<?> startPublication(@PathVariable Long magazineId) {
 		
-		Task task = taskService.createTaskQuery().processInstanceId(pi.getId()).list().get(0);
-		TaskFormData tfd = formService.getTaskFormData(task.getId());
-		List<FormField> properties = tfd.getFormFields();
+		Magazine magazine = magazineService.getMagazine(magazineId);
+		if(magazine == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 		
-        return new FormFieldsDto(task.getId(), pi.getId(), properties);
-    }
+		Appuser author = userService.getbyUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+		
+		Map<String, Object> variables = new HashMap<String,Object>();
+		variables.put("magazineId", magazine.getId());
+		variables.put("authorId", author.getId());
+		/*variables.put("mainEditorId", magazine.getMainEditor().getId().toString());
+		variables.put("magazineTitle", magazine.getName());*/
+		runtimeService.startProcessInstanceByKey("Article", variables);
+
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 	
 	@RequestMapping(value = "/{magazineId}", method = RequestMethod.GET)
 	public ResponseEntity<MagazineDto> getMagazine(@PathVariable Long magazineId) {

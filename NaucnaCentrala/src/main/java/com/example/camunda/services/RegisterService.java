@@ -8,6 +8,7 @@ import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.camunda.bpm.engine.identity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.camunda.dto.AddSciFieldDto;
@@ -45,6 +46,9 @@ public class RegisterService implements JavaDelegate {
 		createdUser.setRole(Roles.USER.toString());
 		Appuser newUser = userService.mapDTO(createdUser);
 		newUser.setScientificFields(sciFieldDto.convert(sciFields));
+		
+		BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
+        newUser.setPassword(bc.encode(createdUser.getPassword()));
 		
         User camundaUser = identityService.newUser(createdUser.getUsername());
         camundaUser.setEmail(createdUser.getEmail());
