@@ -95,12 +95,9 @@ public class AppUserService {
     	  else
       		  System.out.println(auth.getName());
 
-          try {
-              Long id = Long.parseLong(auth.getName());
-             
-              Optional<Appuser> user = userRepository.findById(id);
-              Appuser ret = user.orElseGet(null);
-              return ret;
+          try {             
+              Appuser user = getbyUsername(auth.getName());
+              return user;
           } catch (Exception e) {
               return null;
           }

@@ -14,6 +14,7 @@ import org.camunda.bpm.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,14 +75,18 @@ public class CamundaController {
         return new FormFieldsDto(task.getId(),task.getProcessInstanceId(), properties);
     }
 	
-	@GetMapping(path = "/getTaskFormForUser/{userId}", produces = "application/json")
-    public @ResponseBody FormFieldsDto getTaskFormForUser(@PathVariable String userId) {
-		//Task task = taskService.createTaskQuery().processInstanceId(processInstanceId).list().get(0);
-		Task task = taskService.createTaskQuery().active().taskAssignee(userId).list().get(0);
-		TaskFormData tfd = formService.getTaskFormData(task.getId());
-		List<FormField> properties = tfd.getFormFields();
-	    
-        return new FormFieldsDto(task.getId(),task.getProcessInstanceId(), properties);
+	@GetMapping(path = "/getTasksForUser", produces = "application/json")
+    public @ResponseBody ResponseEntity<List<TaskDto>> getTaskFormForUser() {
+		
+		String activeUser = SecurityContextHolder.getContext().getAuthentication().getName();
+		List<Task> tasks = taskService.createTaskQuery().taskAssignee(activeUser).active().list();
+		
+		List<TaskDto> dtos = new ArrayList<TaskDto>();
+		for (Task task : tasks) {
+			TaskDto t = new TaskDto(task.getId(), task.getName(), task.getAssignee());
+			dtos.add(t);
+		}
+        return new ResponseEntity<List<TaskDto>>(dtos,  HttpStatus.OK);
     }
 	
 	@GetMapping(path = "/get/tasks/{processInstanceId}", produces = "application/json")

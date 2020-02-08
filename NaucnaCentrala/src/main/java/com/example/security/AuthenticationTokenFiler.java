@@ -41,24 +41,23 @@ public class AuthenticationTokenFiler extends UsernamePasswordAuthenticationFilt
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		final String requestHeader = httpRequest.getHeader(this.tokenHeader);
 		String authToken = null;
-		  if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-	            authToken = requestHeader.substring(7);
-		//String authToken = httpRequest.getHeader("Authorization");
-		String username = jwtTokenUtil.getUsernameFromToken(authToken);
-		
-		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
-		{			
-			Appuser user = userService.getbyUsername(username);
-			MyUserDetailsService customUserDetails = new MyUserDetailsService(user);
+		if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
+            authToken = requestHeader.substring(7);
+			String username = jwtTokenUtil.getUsernameFromToken(authToken);
 			
-			if (jwtTokenUtil.validateToken(authToken)) {
+			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null)
+			{			
+				Appuser user = userService.getbyUsername(username);
+				MyUserDetailsService customUserDetails = new MyUserDetailsService(user);
 				
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-						customUserDetails, null, customUserDetails.getAuthorities());
-				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+				if (jwtTokenUtil.validateToken(authToken)) {
+					
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+							customUserDetails, null, customUserDetails.getAuthorities());
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(httpRequest));
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
 			}
-		}
 		}
 		chain.doFilter(request, response);
 	}

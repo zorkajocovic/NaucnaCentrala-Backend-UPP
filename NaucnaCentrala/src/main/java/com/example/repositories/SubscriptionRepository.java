@@ -1,5 +1,7 @@
 package com.example.repositories;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,6 +12,8 @@ import com.example.model.Subscription;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 	
-	@Query("SELECT u FROM Subscription u WHERE u.appuser  = :appuser and u.magazine = :magazine")
-	Subscription findByUserAndMagazine(@Param("appuser") Long appuser, @Param("magazine") Long magazine);	
+	//@Query("SELECT u FROM Subscription u WHERE u.appuser  = :appuser and u.magazine = :magazine")
+	//Subscription findByUserAndMagazine(@Param("appuser") Long appuser, @Param("magazine") Long magazine);	
+	Optional<Subscription> findOneByAppuserId(Long id);
+
 }

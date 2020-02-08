@@ -1,5 +1,7 @@
 package com.example.camunda.services;
 
+import java.util.Optional;
+
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +19,19 @@ public class CheckAuthorsSubscription implements JavaDelegate {
 	@Override
 	public void execute(DelegateExecution execution) throws Exception {
 
-    	Long authorId = Long.parseLong(execution.getVariable("authorId").toString());
-		Long magazineId = Long.parseLong(execution.getVariable("magazineId").toString());
+    	String authorId = execution.getVariable("authorId").toString();
+		//Long magazineId = Long.parseLong(execution.getVariable("magazineId").toString());
 
-    	Subscription subscription = subscriptionRepository.findByUserAndMagazine(authorId, magazineId);
-    	
+    	Optional<Subscription> subscription = subscriptionRepository.findOneByAppuserId(Long.parseLong(authorId));
+    
     	if(subscription != null) 
             execution.setVariable("payed", true);
-        else 
+        else {
             execution.setVariable("payed", false);
+
+        }
+    	
+    	execution.setVariable("authorId", authorId);
 	}
 }
 

@@ -25,11 +25,11 @@ public class ScientificField implements Serializable {
 	
 	//bi-directional many-to-many association to Appuser
 	@ManyToMany(fetch=FetchType.LAZY)
-	private List<Appuser> appusers;
+	private List<Appuser> appuser;
 
 	//bi-directional many-to-many association to Magazine
 	@ManyToMany(fetch=FetchType.LAZY)
-	private List<Magazine> magazines;
+	private List<Magazine> magazine;
 
 	public ScientificField() {
 	}
@@ -51,19 +51,19 @@ public class ScientificField implements Serializable {
 	}
 
 	public List<Appuser> getAppusers() {
-		return this.appusers;
+		return this.appuser;
 	}
 
 	public void setAppusers(List<Appuser> appusers) {
-		this.appusers = appusers;
+		this.appuser = appusers;
 	}
 
 	public List<Magazine> getMagazines() {
-		return this.magazines;
+		return this.magazine;
 	}
 
 	public void setMagazines(List<Magazine> magazines) {
-		this.magazines = magazines;
+		this.magazine = magazines;
 	}
 
 }

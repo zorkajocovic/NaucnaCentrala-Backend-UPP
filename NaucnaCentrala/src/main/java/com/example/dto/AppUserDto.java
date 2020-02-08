@@ -1,6 +1,11 @@
 package com.example.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.model.Appuser;
+import com.example.model.Magazine;
+import com.example.model.ScientificField;
 
 public class AppUserDto {
 	
@@ -26,6 +31,12 @@ public class AppUserDto {
 	
 	private boolean isReviewer;
 	
+	private List<SciFieldDto> sci_fields;
+	
+	private List<MagazineDto> magazines_editor;
+	
+	private List<MagazineDto> magazines_reviewer;
+
 	public AppUserDto() {
 	}
 
@@ -39,6 +50,24 @@ public class AppUserDto {
 		this.setUsername(user.getUsername());
 		this.setRole(user.getRole());
 		this.setNoOfSciFields(user.getScientificFields().size());
+		
+		this.sci_fields = new ArrayList<SciFieldDto>();
+		for(ScientificField p : user.getScientificFields()){
+			SciFieldDto sciDTO = new SciFieldDto(p);
+			this.sci_fields.add(sciDTO);
+		}
+		
+		this.magazines_reviewer = new ArrayList<MagazineDto>();
+		for(Magazine p : user.getMagazinesReviewer()){
+			MagazineDto sciDTO = new MagazineDto(p);
+			this.magazines_reviewer.add(sciDTO);
+		}
+		
+		this.magazines_editor = new ArrayList<MagazineDto>();
+		for(Magazine p : user.getMagazinesEditor()){
+			MagazineDto sciDTO = new MagazineDto(p);
+			this.magazines_editor.add(sciDTO);
+		}
 	}
 
 	public long getId() {

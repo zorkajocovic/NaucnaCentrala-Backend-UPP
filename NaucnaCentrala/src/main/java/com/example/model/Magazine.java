@@ -29,7 +29,7 @@ public class Magazine implements Serializable {
 	private Appuser appuser;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	@JoinTable(
 		name="magazine_scifield"
 		, joinColumns={

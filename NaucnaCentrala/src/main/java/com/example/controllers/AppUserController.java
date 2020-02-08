@@ -73,15 +73,6 @@ public class AppUserController {
 	@Value("Authorization")
 	private String tokenHeader;
 	
-	@Autowired
-	private LoginDto loginDto; 
-	 
-	@Autowired
-    private JWTUtils jwtUtils;
-	
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	
 	@GetMapping("/allUsers")
 	public ResponseEntity<List<AppUserDto>> getAllUsers(){
 		
@@ -147,32 +138,13 @@ public class AppUserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 	
-	/*@RequestMapping(value = "/login", method = RequestMethod.POST, consumes = "application/json", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> login(@RequestBody LoginRequestDto loginDTO) {
-       
-		try {			
-			Appuser user = userService.getbyUsername(loginDTO.getUsername());
-			if(user != null) {
-			   userService.setCurrentUser(user);
-			}
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-	}*/
-	
 	@PostMapping(path = "/login/{taskId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity<?> post(@RequestBody LoginRequestDto loginRequestDto, @PathVariable String taskId) {
 		
 		try{
 			  Appuser user = userService.getbyUsername(loginRequestDto.getUsername());
 			  if(user != null) {
-			     /* UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
-			        		 										loginRequestDto.getUsername(),
-			        		 										loginRequestDto.getPassword());
-			      authenticationManager.authenticate(token);*/
-					
+
 				  TokenDto tokenDto = userService.generateToken(user.getUsername());
 
 		            Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -192,10 +164,11 @@ public class AppUserController {
     }
 	
 	@RequestMapping(value = "/getCurrentUser", method = RequestMethod.GET)
-    public @ResponseBody ResponseEntity<Object> getCurrentUser() {
+    public @ResponseBody ResponseEntity<AppUserDto> getCurrentUser() {
 		
 		Appuser currentUser = userService.getCurrentUser();
-        return new ResponseEntity<>(currentUser, HttpStatus.OK);
+		AppUserDto userDto = new AppUserDto(currentUser);
+        return new ResponseEntity<>(userDto, HttpStatus.OK);
     }
 	
 	@RequestMapping(value = "/logout", method = RequestMethod.POST)

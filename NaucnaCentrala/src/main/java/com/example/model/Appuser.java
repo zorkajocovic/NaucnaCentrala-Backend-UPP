@@ -2,6 +2,11 @@ package com.example.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+import java.util.List;
 import java.util.Set;
 
 
@@ -35,7 +40,7 @@ public class Appuser implements Serializable {
 	private String username;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	@JoinTable(
 		name="appuser_scifield"
 		, joinColumns={
@@ -52,13 +57,41 @@ public class Appuser implements Serializable {
 	private Set<Article> articles;
 
 	//bi-directional many-to-many association to Magazine
-	@ManyToMany(mappedBy="reviewers", fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@JoinTable(
+		name="magazine_reviewer"
+		, joinColumns={
+			@JoinColumn(name="magazine_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="appuser_id")
+			}
+		)
 	private Set<Magazine> magazinesReviewer;
 
 	//bi-directional many-to-many association to Magazine
-	@ManyToMany(mappedBy="editors", fetch=FetchType.EAGER)
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@JoinTable(
+		name="magazine_editor"
+		, joinColumns={
+			@JoinColumn(name="magazine_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="appuser_id")
+			}
+		)
 	private Set<Magazine> magazinesEditor;
 	
+	//bi-directional many-to-one association to Review
+	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private Set<Review> reviews;
+
+	//bi-directional many-to-one association to Subscription
+	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
+	@LazyCollection(LazyCollectionOption.FALSE)
+	private List<Subscription> subscriptions;
+		
 	public Set<Magazine> getMagazinesReviewer() {
 		return magazinesReviewer;
 	}
@@ -74,14 +107,6 @@ public class Appuser implements Serializable {
 	public void setMagazinesEditor(Set<Magazine> magazinesEditor) {
 		this.magazinesEditor = magazinesEditor;
 	}
-
-	//bi-directional many-to-one association to Review
-	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
-	private Set<Review> reviews;
-
-	//bi-directional many-to-one association to Subscription
-	@OneToMany(mappedBy="appuser", fetch=FetchType.EAGER)
-	private Set<Subscription> subscriptions;
 
 	public Appuser() {
 	}
@@ -214,11 +239,11 @@ public class Appuser implements Serializable {
 		return review;
 	}
 
-	public Set<Subscription> getSubscriptions() {
+	public List<Subscription> getSubscriptions() {
 		return this.subscriptions;
 	}
 
-	public void setSubscriptions(Set<Subscription> subscriptions) {
+	public void setSubscriptions(List<Subscription> subscriptions) {
 		this.subscriptions = subscriptions;
 	}
 

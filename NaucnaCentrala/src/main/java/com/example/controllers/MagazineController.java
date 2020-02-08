@@ -62,13 +62,6 @@ public class MagazineController {
 		return new ResponseEntity<>(magazinesDTO, HttpStatus.OK);
 	}
 	
-	/*@GetMapping(path = "/startArticleProcess/{magazineId}", produces = "application/json")
-    public @ResponseBody FormFieldsDto get(@PathVariable String magazineId) {
-
-		ProcessInstance pi = runtimeService.startProcessInstanceByKey("Article");
-		runtimeService.setVariable(pi.getProcessInstanceId(), "magazineId", magazineId);
-    }*/
-	
 	@GetMapping(path = "/startArticleProcess/{magazineId}", produces = "application/json")
 	public ResponseEntity<?> startPublication(@PathVariable Long magazineId) {
 		
@@ -82,8 +75,8 @@ public class MagazineController {
 		Map<String, Object> variables = new HashMap<String,Object>();
 		variables.put("magazineId", magazine.getId());
 		variables.put("authorId", author.getId());
-		/*variables.put("mainEditorId", magazine.getMainEditor().getId().toString());
-		variables.put("magazineTitle", magazine.getName());*/
+		variables.put("authorUsername", author.getUsername());
+		
 		runtimeService.startProcessInstanceByKey("Article", variables);
 
 		return new ResponseEntity<>(HttpStatus.OK);
