@@ -22,16 +22,16 @@ public class CheckAuthorsSubscription implements JavaDelegate {
     	String authorId = execution.getVariable("authorId").toString();
 		//Long magazineId = Long.parseLong(execution.getVariable("magazineId").toString());
 
-    	Optional<Subscription> subscription = subscriptionRepository.findOneByAppuserId(Long.parseLong(authorId));
+    	Subscription subscription = subscriptionRepository.findOneByAppuserId(Long.parseLong(authorId));
     
     	if(subscription != null) 
             execution.setVariable("payed", true);
         else {
             execution.setVariable("payed", false);
-
+            
         }
     	
-    	execution.setVariable("authorId", authorId);
+    	//execution.setVariable("authorId", authorId);
 	}
 }
 

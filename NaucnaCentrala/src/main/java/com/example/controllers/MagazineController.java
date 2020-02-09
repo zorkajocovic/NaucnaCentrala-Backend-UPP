@@ -12,20 +12,25 @@ import org.camunda.bpm.engine.form.FormField;
 import org.camunda.bpm.engine.form.TaskFormData;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.camunda.dto.FieldDto;
 import com.example.camunda.dto.FormFieldsDto;
+import com.example.camunda.dto.TaskDto;
 import com.example.dto.MagazineDto;
+import com.example.dto.SubscriptionDto;
 import com.example.services.AppUserService;
 import com.example.services.MagazineService;
 import com.example.model.Appuser;
@@ -82,6 +87,31 @@ public class MagazineController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	@RequestMapping(value = "/tasks/submit/{taskId}/{instanceId}/{magazineId}/{payed}", method = RequestMethod.GET)
+    public @ResponseBody ResponseEntity<?> submitTask(@PathVariable String taskId, 
+											    		@PathVariable String instanceId, 
+											    		@PathVariable Long magazineId,
+											    		@PathVariable boolean payed) {
+		
+		HashMap<String, Object> map = new HashMap<>();
+		map.put("payed", payed);
+		
+		if(payed) {
+			runtimeService.setVariable(instanceId, "payed", true);
+			runtimeService.setVariable(instanceId, "magazineId", magazineId);
+			
+			formService.submitTaskForm(taskId, map);
+	        return new ResponseEntity<>(true, HttpStatus.OK);
+		}
+		else {
+			runtimeService.setVariable(instanceId, "payed", false);
+			runtimeService.setVariable(instanceId, "subcribed", false);
+			formService.submitTaskForm(taskId, map);
+	        return new ResponseEntity<>(false, HttpStatus.OK);
+		}
+		
+    }
+	
 	@RequestMapping(value = "/{magazineId}", method = RequestMethod.GET)
 	public ResponseEntity<MagazineDto> getMagazine(@PathVariable Long magazineId) {
 		Magazine c = magazineService.getMagazine(magazineId);
@@ -97,5 +127,14 @@ public class MagazineController {
 		Magazine c = magazineService.mapDTO(magazineDto);
 		magazineService.addMagazine(c);
 		return new ResponseEntity<>(new MagazineDto(c), HttpStatus.CREATED);
+	}
+	
+	private HashMap<String, Object> mapListToDto(List<FieldDto> list)
+	{
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		for(FieldDto temp : list){
+			map.put(temp.getFieldId(), temp.getFieldValue());
+		}
+		return map;
 	}
 }

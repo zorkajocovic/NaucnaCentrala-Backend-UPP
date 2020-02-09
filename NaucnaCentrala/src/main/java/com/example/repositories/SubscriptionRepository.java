@@ -14,6 +14,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 	
 	//@Query("SELECT u FROM Subscription u WHERE u.appuser  = :appuser and u.magazine = :magazine")
 	//Subscription findByUserAndMagazine(@Param("appuser") Long appuser, @Param("magazine") Long magazine);	
-	Optional<Subscription> findOneByAppuserId(Long id);
+	Subscription findOneByAppuserId(Long id);
 
 }

@@ -329,7 +329,7 @@
         <bpmn:outgoing>SequenceFlow_1nba6z1</bpmn:outgoing>
         <bpmn:outgoing>SequenceFlow_1b4gy6f</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:serviceTask id="Task_0z7kk25" name="Save in database" camunda:class="com.example.camunda.services.AddArticle">
+      <bpmn:serviceTask id="Task_0z7kk25" name="Save in database" camunda:class="com.example.camunda.services.AddSubscription">
         <bpmn:incoming>SequenceFlow_1nba6z1</bpmn:incoming>
         <bpmn:outgoing>SequenceFlow_0q0jlle</bpmn:outgoing>
       </bpmn:serviceTask>
@@ -338,7 +338,7 @@
       </bpmn:startEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0yl4vvm" sourceRef="StartEvent_1hbp1tl" targetRef="Task_1jr6wyb" />
       <bpmn:sequenceFlow id="SequenceFlow_1nba6z1" sourceRef="Task_1jr6wyb" targetRef="Task_0z7kk25">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${pay}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${payed}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:endEvent id="EndEvent_1mgb8jv">
         <bpmn:incoming>SequenceFlow_0q0jlle</bpmn:incoming>
@@ -346,7 +346,7 @@
       </bpmn:endEvent>
       <bpmn:sequenceFlow id="SequenceFlow_0q0jlle" sourceRef="Task_0z7kk25" targetRef="EndEvent_1mgb8jv" />
       <bpmn:sequenceFlow id="SequenceFlow_1b4gy6f" sourceRef="Task_1jr6wyb" targetRef="EndEvent_1mgb8jv">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!pay}</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!payed}</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
     </bpmn:subProcess>
     <bpmn:sequenceFlow id="SequenceFlow_1p75iqx" name="Author is now subscribed" sourceRef="Subscription" targetRef="Task_0084rjd">
