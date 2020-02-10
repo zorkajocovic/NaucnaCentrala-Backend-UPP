@@ -58,7 +58,15 @@ public class Magazine implements Serializable {
 		)
 	private Set<Appuser> reviewers;
 	
-	//bi-directional many-to-many association to Appuser
+	public Set<Appuser> getReviewers() {
+		return reviewers;
+	}
+
+	public void setReviewers(Set<Appuser> reviewers) {
+		this.reviewers = reviewers;
+	}
+
+		//bi-directional many-to-many association to Appuser
 		@ManyToMany(fetch=FetchType.EAGER)
 		@JoinTable(
 			name="magazine_editor"

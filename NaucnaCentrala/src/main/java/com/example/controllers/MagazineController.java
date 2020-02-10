@@ -109,7 +109,6 @@ public class MagazineController {
 			formService.submitTaskForm(taskId, map);
 	        return new ResponseEntity<>(false, HttpStatus.OK);
 		}
-		
     }
 	
 	@RequestMapping(value = "/{magazineId}", method = RequestMethod.GET)

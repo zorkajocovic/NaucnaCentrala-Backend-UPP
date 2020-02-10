@@ -40,17 +40,18 @@ public class NewArticleNotification implements JavaDelegate {
 		Appuser main_editor = magazine.getAppuser();
 		Appuser author = userService.getOne(authorId);
 		
-		execution.setVariable("editorUsername", main_editor.getUsername());
+		execution.setVariable("mainEditor", main_editor.getUsername());
+		
 		 String body = "Hello,\\r\\n" +
 	         			"New article is submited.";
 		
 		emailService.getMail().setTo(author.getEmail());
-		emailService.getMail().setSubject("Notification");
+		emailService.getMail().setSubject("New Article in progress");
 		emailService.getMail().setText(body);
 		emailService.sendNotificaitionSync();
 		
 		emailService.getMail().setTo(main_editor.getEmail());
-		emailService.getMail().setSubject("Notification");
+		emailService.getMail().setSubject("New Article in progress");
 		emailService.getMail().setText(body);
 		emailService.sendNotificaitionSync();
 		

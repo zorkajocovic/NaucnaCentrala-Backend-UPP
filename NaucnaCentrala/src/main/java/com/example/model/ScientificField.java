@@ -12,7 +12,7 @@ import java.util.Set;
  * 
  */
 @Entity
-@Table(name="scientific_field")
+//@Table(name="scientific_field")
 @NamedQuery(name="ScientificField.findAll", query="SELECT s FROM ScientificField s")
 public class ScientificField implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -24,8 +24,17 @@ public class ScientificField implements Serializable {
 	private String name;
 	
 	//bi-directional many-to-many association to Appuser
-	@ManyToMany(fetch=FetchType.LAZY)
-	private List<Appuser> appuser;
+	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@JoinTable(
+		name="appuser_scifield"
+		, joinColumns={
+			@JoinColumn(name="appuser_id")
+			}
+		, inverseJoinColumns={
+			@JoinColumn(name="scientific_field_id")
+			}
+		)
+	private Set<Appuser> appuser;
 
 	//bi-directional many-to-many association to Magazine
 	@ManyToMany(fetch=FetchType.LAZY)
@@ -50,11 +59,11 @@ public class ScientificField implements Serializable {
 		this.name = name;
 	}
 
-	public List<Appuser> getAppusers() {
+	public Set<Appuser> getAppusers() {
 		return this.appuser;
 	}
 
-	public void setAppusers(List<Appuser> appusers) {
+	public void setAppusers(Set<Appuser> appusers) {
 		this.appuser = appusers;
 	}
 

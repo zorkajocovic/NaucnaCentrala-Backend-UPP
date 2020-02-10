@@ -23,6 +23,8 @@ public class ArticleDto {
 	
 	private List<ReviewDto> reviews;
 	
+	private String authorEmail;
+	
 	public ArticleDto() { }
 	
 	public ArticleDto(Article article) {
@@ -104,6 +106,14 @@ public class ArticleDto {
 
 	public void setAppuser(AppUserDto appuser) {
 		this.appuser = appuser;
+	}
+
+	public String getAuthorEmail() {
+		return authorEmail;
+	}
+
+	public void setAuthorEmail(String authorEmail) {
+		this.authorEmail = authorEmail;
 	}
 
 

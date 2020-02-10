@@ -121,7 +121,7 @@ public class AppUserService {
 		user.setCity(userDto.getCity());
 		user.setCountry(userDto.getCountry());
 		user.setEmail(userDto.getEmail());
-		user.setName(userDto.getEmail());
+		user.setName(userDto.getName());
 		user.setSurname(userDto.getSurname());
 		user.setPassword(userDto.getPassword());
 		user.setUsername(userDto.getUsername());

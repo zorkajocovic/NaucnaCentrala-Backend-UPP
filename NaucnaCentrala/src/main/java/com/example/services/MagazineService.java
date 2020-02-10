@@ -2,6 +2,7 @@ package com.example.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.dto.MagazineDto;
 import com.example.dto.SciFieldDto;
 import com.example.repositories.MagazineRepository;
-
+import com.example.model.Appuser;
 import com.example.model.Magazine;
 import com.example.model.ScientificField;
 
@@ -56,6 +57,13 @@ public class MagazineService {
 		magazine.setIsopenaccess(magazineDto.isIsopenaccess());
 	
 		return magazine;
+	}
+	
+	public List<Appuser> getReviewers(Long magazineId){
+		
+		Magazine magazine = getMagazine(magazineId);
+		Set<Appuser> reviewers = magazine.getReviewers();
+		return new ArrayList<>(reviewers);
 	}
 	
 	public MagazineDto mapToDTO(Magazine magazine){

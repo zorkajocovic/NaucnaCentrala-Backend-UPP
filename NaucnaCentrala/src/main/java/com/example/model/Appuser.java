@@ -40,16 +40,16 @@ public class Appuser implements Serializable {
 	private String username;
 
 	//bi-directional many-to-many association to ScientificField
-	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@ManyToMany(fetch=FetchType.LAZY)
 	@JoinTable(
-		name="appuser_scifield"
-		, joinColumns={
-			@JoinColumn(name="appuser_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="scientific_field_id")
-			}
-		)
+			name="appuser_scifield"
+			, joinColumns={
+				@JoinColumn(name="appuser_id")
+				}
+			, inverseJoinColumns={
+				@JoinColumn(name="scientific_field_id")
+				}
+			)
 	private Set<ScientificField> scientificFields;
 
 	//bi-directional many-to-one association to Article
